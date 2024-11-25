@@ -1,11 +1,10 @@
 import Form from "./Form";
-import OtherBtns from "./OtherBtns";
+import CreateAccBtn from "./CreateAccBtn";
 
 type Props = {
-  setMenu: (value: string) => void;
 };
 
-const Login = ({ setMenu }: Props) => {
+const Login = (props: Props) => {
   return (
     <section
       aria-label="login area"
@@ -13,7 +12,7 @@ const Login = ({ setMenu }: Props) => {
     >
       <h2 className="text-neutral-600 font-bold">Login</h2>
       <Form />
-      <OtherBtns setMenu={setMenu} />
+      <CreateAccBtn />
     </section>
   );
 };

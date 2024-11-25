@@ -1,29 +1,18 @@
 "use client"
-import React, { useState } from 'react'
-import Título from './Title';
 import Login from './Login/Login';
 import Footer from './Footer';
-import CreateAcc from './CreateAcc/CreateAcc';
-import ForgotPass from './ForgotPass/ForgotPass';
+import Title from './Title';
 
-type Props = {}
+type Props = {
+};
 
 const Interface = (props: Props) => {
-	const [menu, setMenu] = useState<string>("login");
 	return (
-    <>
-      <Título />
-			{
-				menu === "login" ? (
-					<Login setMenu={setMenu} />
-				) : menu === "create_acc" ? (
-					<CreateAcc />
-				) : (
-					<ForgotPass />
-				)
-			}     
-      <Footer />
-    </>
+    <main className="flex min-h-screen flex-col items-center justify-center px-24 text-neutral-700 gap-10 xxl:px-16 xl:px-8">
+      	<Title />
+		<Login />   
+      	<Footer />
+    </main>
   );
 }
 

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/components/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Carteira de Despesas Digital | Crie e customize suas despesas",
-  description: "Carteira de despesas digital, crie e customize suas despesas.",
+  title: "To-do List | Create and customize your to-dos online",
+  description: "To-do List, Create and customize your to-dos online.",
 };
 
 export default function RootLayout({
@@ -16,7 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+		<AuthProvider>
+			{children}
+		</AuthProvider>
+	</body>
     </html>
   );
 }
