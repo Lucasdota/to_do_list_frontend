@@ -1,18 +1,16 @@
-import React, { useEffect } from "react";
-import { useRouter } from "next/router";
-import { useAuth } from "@/components/AuthContext";
+"use client"
+import { useEffect } from "react";
 
-export default function page() {
-	const { isAuthenticated } = useAuth();
-  	const router = useRouter();
+export default function Dashboard() {
+	
+  useEffect(() => {
+    // You can fetch user data here if needed
+  }, []);
 
-	useEffect(() => {
-		if (!isAuthenticated) {
-		router.push("/"); // Redirect to the login page if not authenticated
-		}
-    }, [isAuthenticated, router]);
-
-	return (
-		<div>page</div>
-	)
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome to your dashboard!</p>
+    </div>
+  );
 }

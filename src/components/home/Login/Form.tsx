@@ -3,7 +3,6 @@ import React, { FormEvent, useState, useRef } from "react";
 import { FaUser, FaEye } from "react-icons/fa";
 import { FaLock } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/AuthContext";
 
 interface formDataObj {
   userEmail: string | null;
@@ -20,7 +19,6 @@ const FormContainer = (props: Props) => {
   const passErrorRef = useRef<HTMLSpanElement | null>(null);
   const serverErrorRef = useRef<HTMLSpanElement | null>(null);
   const router = useRouter();
-  const { login } = useAuth();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -37,7 +35,10 @@ const FormContainer = (props: Props) => {
     validateForm(formDataObj);
   };
 
-  function validateForm(data: formDataObj) {
+  function validateForm(data: formDataObj) {	
+    const email = data.userEmail;
+    const password = data.userPass;
+
     // Validate password
     const regexPassword =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>?])(?=.{8,}).*$/;
@@ -52,36 +53,39 @@ const FormContainer = (props: Props) => {
         }, 100);
       }
       setPassError(
-        "Password must have least 8 characters, one uppercase, one lowercase and one special."
+        "Password must have at least 8 characters, one uppercase, one lowercase, and one special character."
       );
       return;
     }
 
     setWaiting(true);
-    //SEND DATA TO THE SERVER
-    fetch("../api/login.js", {
+    // SEND DATA TO THE SERVER
+    fetch("/api/auth", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify({ email, password }),
       headers: {
         "Content-Type": "application/json",
       },
+			credentials: "include"
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Invalid email or password."); // Handle specific error
         }
         return response.json();
       })
       .then((responseData) => {
-        //Handle successful response
+        // Handle successful response
         console.log("Data sent successfully:", responseData);
-        login();
-        router.push("/dashboard");
         setWaiting(false);
+        router.push("/dashboard");
+				setServerError("");
       })
       .catch((error) => {
-        //Handle error
+        // Handle error
+				console.log("chegou no error do validate");
         console.error("Error sending data:", error);
+        setWaiting(false);
         if (serverErrorRef.current) {
           serverErrorRef.current?.classList.remove("text-red-400");
           serverErrorRef.current?.classList.add("text-slate-100");
@@ -89,10 +93,8 @@ const FormContainer = (props: Props) => {
             serverErrorRef.current?.classList.remove("text-slate-100");
             serverErrorRef.current?.classList.add("text-red-400");
           }, 100);
-          setWaiting(false);
         }
-        setServerError("Invalid email or password.");
-        setWaiting(false);
+        setServerError(error.message);
       });
   }
 
