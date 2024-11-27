@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import db from "../../../../db"; // Adjust the import path as necessary
+import db from "../../../../db";
 
 // User Login
 export async function POST(req) {
@@ -10,7 +10,7 @@ export async function POST(req) {
     // Find the user in your database
     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [
       email,
-    ]);
+    ]);	
     const user = rows[0];
 
     // Check if user exists and if the password is correct
@@ -31,7 +31,7 @@ export async function POST(req) {
     const headers = new Headers();
     headers.append(
       "Set-Cookie",
-      `token=${token}; HttpOnly; Path=/; Max-Age=2592000`
+      `token=${token}; Path=/; HttpOnly; Max-Age=2592000`
     ); // 30 days
 
     return new Response(JSON.stringify({ message: "Logged in successfully" }), {

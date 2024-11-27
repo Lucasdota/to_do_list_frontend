@@ -1,4 +1,6 @@
 {
   "/page": "app/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/api/verifyToken/route": "app/api/verifyToken/route.js",
   "/api/auth/route": "app/api/auth/route.js"
 }
