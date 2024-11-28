@@ -60,7 +60,7 @@ const FormContainer = (props: Props) => {
 
     setWaiting(true);
     // SEND DATA TO THE SERVER
-    fetch("/api/auth", {
+    fetch("/api/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: {
@@ -154,6 +154,7 @@ const FormContainer = (props: Props) => {
             <FaLock className="w-2.5 h-2.5" />
           </div>
           <button
+						type="button"
             id="show_pass"
             aria-label="click to show/hide password"
             onClick={() => setShowPassword((prev) => !prev)}
