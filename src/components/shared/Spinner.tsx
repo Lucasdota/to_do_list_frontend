@@ -1,6 +1,6 @@
 type Props = {
-  width: number; // Width in rem
-  height: number; // Height in rem
+  width: number;
+  height: number;
 };
 
 const Spinner = (props: Props) => {
