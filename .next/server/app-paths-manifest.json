@@ -1,6 +1,7 @@
 {
-  "/create-account/page": "app/create-account/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
   "/page": "app/page.js",
-  "/api/verifyToken/route": "app/api/verifyToken/route.js"
+  "/dashboard/page": "app/dashboard/page.js",
+  "/api/verifyToken/route": "app/api/verifyToken/route.js",
+  "/api/createTodo/route": "app/api/createTodo/route.js",
+  "/api/getUser/route": "app/api/getUser/route.js"
 }
