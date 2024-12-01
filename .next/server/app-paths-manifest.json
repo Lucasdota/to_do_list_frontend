@@ -1,7 +1,4 @@
 {
-  "/page": "app/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/api/verifyToken/route": "app/api/verifyToken/route.js",
-  "/api/createTodo/route": "app/api/createTodo/route.js",
-  "/api/getUser/route": "app/api/getUser/route.js"
+  "/api/verifyToken/route": "app/api/verifyToken/route.js"
 }
