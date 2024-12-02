@@ -13,6 +13,7 @@ export default function Interface() {
   const [todos, setTodos] = useState<TodosType[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+	const [popUp, setPopUp] = useState<boolean>(false);
 
   const fetchUserInfo = async () => {
     try {
@@ -35,6 +36,7 @@ export default function Interface() {
       }
     } finally {
       setLoading(false);
+			setPopUp(false);
     }
   };
 
@@ -66,19 +68,23 @@ export default function Interface() {
       {error && <p className="text-red-500 font-bold">{error}</p>}
       {user && (
         <>
-          <h1 className="text-xl font-bold">Welcome to your dashboard</h1>
-          <h2 className="italic mb-8">{user?.email}</h2>
+          <h1 className="text-xl font-bold md:text-base xs:text-sm">
+            Welcome to your dashboard
+          </h1>
+          <h2 className="italic md:text-sm xs:text-[0.75rem]">{user?.email}</h2>
           <Todos
             todos={todos}
-						userId={user.id}
+            userId={user.id}
             fetchUserInfo={fetchUserInfo}
+            popUp={popUp}
+						setPopUp={setPopUp}
           />
         </>
       )}
       {!loading && (
         <button
           onClick={Logout}
-          className="text-xs py-1 px-2 shadow bg-slate-50 shadow-black/20 rounded transition-transform duration-150 ease-in-out transform active:scale-95"
+          className="text-xs md:text-[0.7rem] sm:text-[0.65rem] py-1 px-2 shadow bg-slate-50 shadow-black/20 rounded transition-transform duration-150 ease-in-out transform active:scale-95"
         >
           Logout
         </button>

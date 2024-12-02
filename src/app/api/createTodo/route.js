@@ -1,11 +1,11 @@
 import db from "../../../../db";
 
 export async function POST(req) {
-	const { userId } = await req.json();
+	const { userId, name, description } = await req.json();
 	try {
 		const result = await db.query(
       "INSERT INTO todos (name, description, done, user_id) VALUES (?, ?, ?, ?)",
-      ["first task", "wash the dishes", 0, userId]
+      [name, description, 0, userId]
     );
 		return new Response(
       JSON.stringify({ success: true, createdId: result.insertId }),

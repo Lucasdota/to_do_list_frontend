@@ -154,7 +154,7 @@ const FormContainer = (props: Props) => {
             <FaLock className="w-2.5 h-2.5" />
           </div>
           <button
-						type="button"
+            type="button"
             id="show_pass"
             aria-label="click to show/hide password"
             onClick={() => setShowPassword((prev) => !prev)}
@@ -198,7 +198,7 @@ const FormContainer = (props: Props) => {
       <button
         type="submit"
         aria-label="click here to login"
-        className="text-[.75rem] w-4/5 bg-gradient-to-r from-green-700 to-green-500 text-white font-bold rounded-full py-1.5 shadow mt-2 transition-transform duration-150 ease-in-out transform active:scale-95"
+        className="text-[.75rem] w-4/5 bg-gradient-to-r from-green-700 to-green-500 text-white font-bold rounded-full py-1.5 shadow mt-2"
       >
         {waiting ? <Spinner width={1} height={1} /> : "Login"}
       </button>

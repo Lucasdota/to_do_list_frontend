@@ -1,4 +1,9 @@
 {
+  "/page": "app/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/api/verifyToken/route": "app/api/verifyToken/route.js"
+  "/api/verifyToken/route": "app/api/verifyToken/route.js",
+  "/api/getUser/route": "app/api/getUser/route.js",
+  "/api/updateStatus/route": "app/api/updateStatus/route.js",
+  "/api/deleteTodo/route": "app/api/deleteTodo/route.js",
+  "/api/logout/route": "app/api/logout/route.js"
 }
