@@ -1,7 +1,8 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { FaUser, FaEye } from "react-icons/fa";
 import { FaLock } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
+import Spinner from "../shared/Spinner";
 
 interface formDataObj {
   userEmail: string | null;
@@ -19,39 +20,55 @@ const Form = () => {
   const [passwordValue, setPasswordValue] = useState<string>("");
   const [confirmPasswordValue, setConfirmPasswordValue] = useState<string>("");
 	const [passValidated, setPassValidated] = useState<boolean>(false);
+	const [isFetching, setIsFetching] = useState<boolean>(false);
+	const passErrorRef = useRef<HTMLSpanElement | null>(null);
+	const confirmPassErrorRef = useRef<HTMLSpanElement | null>(null);
 	const router = useRouter();
 
   function validateForm(data: formDataObj) {
     // validate password
-    if (
-      data.userPass === "" ||
-      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-        data.userPass!
-      )
-    ) {
+		const regexPassword =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>?])(?=.{8,}).*$/;
+    if (!regexPassword.test(data.userPass!)) {
+      // nice animations when submit
+      if (passErrorRef.current) {
+        passErrorRef.current?.classList.remove("text-red-400");
+        passErrorRef.current?.classList.add("text-slate-100");
+        setTimeout(() => {
+          passErrorRef.current?.classList.remove("text-slate-100");
+          passErrorRef.current?.classList.add("text-red-400");
+        }, 100);
+      }
       setPassError(
         "Please enter, at least, an uppercase and a lowercase letter, a number and an special character."
       );
-			setPassValidated(false);
-			return false;
+      setPassValidated(false);
+      return false;
     }
-		// validate that password and confirm password fields are the same
+    // validate that password and confirm password fields are the same
     else if (data.userPass !== data.passConfirm) {
-			setPassValidated(true);
+      setPassValidated(true);
       setPassError("");
+			if (confirmPassErrorRef.current) {
+        confirmPassErrorRef.current?.classList.remove("text-red-400");
+        confirmPassErrorRef.current?.classList.add("text-slate-100");
+        setTimeout(() => {
+          confirmPassErrorRef.current?.classList.remove("text-slate-100");
+          confirmPassErrorRef.current?.classList.add("text-red-400");
+        }, 100);
+      }
       setConfirmError("Passwords are not the same.");
-			return false;
+      return false;
     } else {
       setPassError("");
       setConfirmError("");
-			setPassValidated(true);
-			return true;
+      setPassValidated(true);
+      return true;
     }
   }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // checks the inputs in each interaction when already submitted once
     setSubmittedOnce(true);
     const formData = new FormData(e.target as HTMLFormElement);
     const formDataObj: formDataObj = {
@@ -63,6 +80,7 @@ const Form = () => {
 		// send request to the server if validated
 		if (validated) {
 			try {
+				setIsFetching(true);
 				const response = await fetch("/api/createAcc", {
           method: "POST",
           headers: {
@@ -73,27 +91,21 @@ const Form = () => {
             password: formDataObj.userPass,
           }),
         });
-				if (!response.ok) {
-					const errorData = await response.json();			
-					if (response.status == 409) {
-						console.log(errorData.error);
-						setServerError(errorData.error);
-					} else {
-						console.error(errorData.error);
-						setServerError(errorData.error);
-					}      
+				const data = await response.json();
+				if (!response.ok) {	
+					setServerError(data.error);
         } else {
-          const data = await response.json();
           console.log("Account created successfully:", data);
           router.push("/dashboard");
         }
 			} catch (err) {
 				if (err instanceof Error) {
-					console.error("An error occurred while creating:", err);
           setServerError(err.message);
 				} else {
 					setServerError("Unknown server error while creating account.")
 				}		
+			} finally {
+				setIsFetching(false);
 			}
 		}    
   };
@@ -212,6 +224,7 @@ const Form = () => {
         <div className="min-h-1.5 flex mt-1 ml-2">
           {passError && (
             <span
+							ref={passErrorRef}
               role="alert"
               aria-label="password field error"
               key="passError-span"
@@ -266,6 +279,7 @@ const Form = () => {
         <div className="min-h-1.5 flex mt-1 ml-2">
           {confirmError && (
             <span
+							ref={confirmPassErrorRef}
               role="alert"
               aria-label="confirm password field error"
               key="confirmError-span"
@@ -295,7 +309,7 @@ const Form = () => {
         aria-label="click to submit"
         className="text-[.75rem] w-4/5 bg-gradient-to-r from-green-700 to-green-500 text-white font-bold rounded-full py-1.5 shadow mt-2"
       >
-        Create
+        {isFetching ? <Spinner width={1} height={1} /> : "Create"}
       </button>
     </form>
   );

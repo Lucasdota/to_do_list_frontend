@@ -6,14 +6,15 @@ import Spinner from "@/components/shared/Spinner";
 import Todos from './Todos';
 import TodosType from "./types/todos";
 import UserType from './types/user';
+import { PiGearSix } from "react-icons/pi";
 
 export default function Interface() {
-	const router = useRouter();
   const [user, setUser] = useState<UserType | null>(null);
   const [todos, setTodos] = useState<TodosType[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 	const [popUp, setPopUp] = useState<boolean>(false);
+	const [menu, setMenu] = useState<boolean>(false);
 
   const fetchUserInfo = async () => {
     try {
@@ -44,24 +45,6 @@ export default function Interface() {
     fetchUserInfo();
   }, []);
 
-  const Logout = async () => {
-    try {
-      const response = await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include", // include cookies in the request
-      });
-
-      if (response.ok) {
-        console.log("Logged out successfully");
-        router.push("/");
-      } else {
-        console.error("Logout failed");
-      }
-    } catch (error) {
-      console.error("An error occurred while logging out:", error);
-    }
-  };
-
 	return (
     <>
       {loading && <Spinner width={8} height={8} />}
@@ -71,23 +54,28 @@ export default function Interface() {
           <h1 className="text-xl font-bold md:text-base xs:text-sm">
             Welcome to your dashboard
           </h1>
-          <h2 className="italic md:text-sm xs:text-[0.75rem]">{user?.email}</h2>
+          <div className="flex justify-between items-center gap-4">
+            <h2 className="italic md:text-sm xs:text-[0.75rem]">
+              {user?.email}
+            </h2>
+            <button
+              onClick={() => setMenu(true)}
+              className={`shadow bg-white rounded p-0.5
+								${menu || popUp ? "pointer-events-none" : null}`}
+            >
+              <PiGearSix className="text-gray-800 transform transition-transform active:rotate-45" />
+            </button>
+          </div>
           <Todos
             todos={todos}
             userId={user.id}
             fetchUserInfo={fetchUserInfo}
             popUp={popUp}
-						setPopUp={setPopUp}
+            setPopUp={setPopUp}
+            menu={menu}
+            setMenu={setMenu}
           />
         </>
-      )}
-      {!loading && (
-        <button
-          onClick={Logout}
-          className="text-xs md:text-[0.7rem] sm:text-[0.65rem] py-1 px-2 shadow bg-slate-50 shadow-black/20 rounded transition-transform duration-150 ease-in-out transform active:scale-95"
-        >
-          Logout
-        </button>
       )}
     </>
   );

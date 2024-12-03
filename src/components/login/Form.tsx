@@ -9,94 +9,59 @@ interface formDataObj {
   userPass: string | null;
 }
 
-type Props = {};
-
-const FormContainer = (props: Props) => {
+const Form = () => {
   const [serverError, setServerError] = useState<string>("");
-  const [passError, setPassError] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [waiting, setWaiting] = useState<boolean>(false);
-  const passErrorRef = useRef<HTMLSpanElement | null>(null);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
   const serverErrorRef = useRef<HTMLSpanElement | null>(null);
   const router = useRouter();
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setPassError("");
-    // Accessing form data
+    // accessing form data
     const formData = new FormData(e.target as HTMLFormElement);
-    // Creating an object with the form data
+    // creating an object with the form data
     const formDataObj: formDataObj = {
-      //the FormData object can hold various types of values, including files, so we need to explicitly specify the expected types for each form field
+      // the FormData object can hold various types of values, including files, so we need to explicitly specify the expected types for each form field
       userEmail: formData.get("user_email") as string | null,
       userPass: formData.get("user_pass") as string | null,
     };
-
-    validateForm(formDataObj);
+    // send request to the server
+		try {
+			setIsFetching(true);
+			const response = await fetch("/api/login", {
+				method: "POST",
+				body: JSON.stringify({ email: formDataObj.userEmail, password: formDataObj.userPass }),
+				headers: {
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+			});
+			if (!response.ok) {
+					throw new Error("Invalid email or password.");				
+			}
+			router.push("/dashboard");
+			setServerError("");
+		} catch (err) {
+			console.error("Error sending data:", err);
+			if (serverErrorRef.current) {
+				serverErrorRef.current?.classList.remove("text-red-400");
+				serverErrorRef.current?.classList.add("text-slate-100");
+				setTimeout(() => {
+					serverErrorRef.current?.classList.remove("text-slate-100");
+					serverErrorRef.current?.classList.add("text-red-400");
+				}, 100);
+			}
+			if (err instanceof Error) {
+				setServerError("Invalid email or password.");
+				setServerError(err.message);
+			} else {
+				setServerError("Invalid email or password.");	
+			}
+		} finally {
+			setIsFetching(false);	
+		}
   };
-
-  function validateForm(data: formDataObj) {	
-    const email = data.userEmail;
-    const password = data.userPass;
-
-    // Validate password
-    const regexPassword =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>?])(?=.{8,}).*$/;
-    if (!regexPassword.test(data.userPass!)) {
-      // Nice animations when clicking submit button for the password error message
-      if (passErrorRef.current) {
-        passErrorRef.current?.classList.remove("text-red-400");
-        passErrorRef.current?.classList.add("text-slate-100");
-        setTimeout(() => {
-          passErrorRef.current?.classList.remove("text-slate-100");
-          passErrorRef.current?.classList.add("text-red-400");
-        }, 100);
-      }
-      setPassError(
-        "Password must have at least 8 characters, one uppercase, one lowercase, and one special character."
-      );
-      return;
-    }
-
-    setWaiting(true);
-    // SEND DATA TO THE SERVER
-    fetch("/api/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-			credentials: "include"
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Invalid email or password."); // Handle specific error
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        // Handle successful response
-        console.log("Data sent successfully:", responseData);
-        setWaiting(false);
-        router.push("/dashboard");
-				setServerError("");
-      })
-      .catch((error) => {
-        // Handle error
-				console.log("chegou no error do validate");
-        console.error("Error sending data:", error);
-        setWaiting(false);
-        if (serverErrorRef.current) {
-          serverErrorRef.current?.classList.remove("text-red-400");
-          serverErrorRef.current?.classList.add("text-slate-100");
-          setTimeout(() => {
-            serverErrorRef.current?.classList.remove("text-slate-100");
-            serverErrorRef.current?.classList.add("text-red-400");
-          }, 100);
-        }
-        setServerError(error.message);
-      });
-  }
 
   return (
     <form
@@ -129,7 +94,7 @@ const FormContainer = (props: Props) => {
       </div>
 
       {/* password */}
-      <div aria-label="senha" className="flex flex-col w-full">
+      <div aria-label="senha" className="flex flex-col w-full mb-1.5">
         <label
           htmlFor="user_pass"
           className="text-[.75rem] font-bold text-neutral-400 mb-1"
@@ -167,19 +132,6 @@ const FormContainer = (props: Props) => {
             />
           </button>
         </div>
-        <div className="min-h-1.5 flex mt-1 ml-2">
-          {passError && (
-            <span
-              ref={passErrorRef}
-              role="alert"
-              aria-label="password field error"
-              key="passError-span"
-              className="text-red-400 text-[0.65rem] font-semibold leading-[0.75rem] md:text-[0.6rem] md:leading-[0.7rem] transition-all duration-100 ease-in-out"
-            >
-              {passError}
-            </span>
-          )}
-        </div>
       </div>
 
       {serverError && (
@@ -200,10 +152,10 @@ const FormContainer = (props: Props) => {
         aria-label="click here to login"
         className="text-[.75rem] w-4/5 bg-gradient-to-r from-green-700 to-green-500 text-white font-bold rounded-full py-1.5 shadow mt-2"
       >
-        {waiting ? <Spinner width={1} height={1} /> : "Login"}
+        {isFetching ? <Spinner width={1} height={1} /> : "Login"}
       </button>
     </form>
   );
 };
 
-export default FormContainer;
+export default Form;

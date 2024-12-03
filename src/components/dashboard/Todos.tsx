@@ -1,8 +1,9 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import TodosType from "./types/todos";
 import { CiSquarePlus } from "react-icons/ci";
 import PopUp from './PopUp';
 import { MdDeleteForever } from "react-icons/md";
+import DropdownMenu from './DropdownMenu';
 
 type Props = {
   todos: TodosType[] | null;
@@ -10,10 +11,13 @@ type Props = {
   fetchUserInfo: () => void;
   popUp: boolean;
   setPopUp: Dispatch<SetStateAction<boolean>>;
+  menu: boolean;
+  setMenu: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function Todos({ todos, userId, fetchUserInfo, popUp, setPopUp }: Props) {
-  const handleCreate = () => {
+export default function Todos({ todos, userId, fetchUserInfo, popUp, setPopUp, menu, setMenu }: Props) {
+  
+	const handleCreate = () => {
     setPopUp(true);
   };
 
@@ -56,12 +60,11 @@ export default function Todos({ todos, userId, fetchUserInfo, popUp, setPopUp }:
 
   return (
     <section
-      className={`my-8 rounded shadow shadow-black/20 w-4/5 min-h-96 bg-slate-50/60 relative border-black/10 border
-		${todos!.length > 0 ? null : "flex justify-center items-center"}
-		`}
+      className={`my-8 rounded shadow shadow-black/20 w-4/5 max-w-4xl md:w-full min-h-96 bg-slate-50/60 relative border-black/10 border flex justify-center  
+			${todos!.length > 0 ? null : "items-center"}`}
     >
       {todos!.length > 0 ? (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto w-full flex flex-col items-center">
           <table className="min-w-full border-collapse">
             <thead>
               <tr className="bg-gray-200">
@@ -81,42 +84,45 @@ export default function Todos({ todos, userId, fetchUserInfo, popUp, setPopUp }:
                   key={index}
                   className="hover:bg-gray-100 border-b border-black/10"
                 >
-                  <td className="px-0.5 py-2 border-r flex items-center justify-center">
+                  <td className="p-2 md:p-1 md:mb-1 border-r flex items-center justify-center">
                     <input
                       type="checkbox"
                       checked={todo.done.data[0] === 1}
                       onChange={() =>
                         handleCheckboxChange(todo.done.data[0], todo.id)
                       }
-                      className="cursor-pointer"
+                      className="cursor-pointer md:w-2.5"
                     />
                   </td>
                   <td
-                    className={`p-2 md:py-1 border-r max-w-56 xxl:max-w-44 lg:max-w-32 md:max-w-20 md:text-sm xs:text-[0.7rem] text-pretty ${
+                    className={`p-2 md:py-1 border-r max-w-56 xxl:max-w-44 lg:max-w-32 md:max-w-24 md:text-sm xs:text-[0.7rem] break-words ${
                       todo.done.data[0] === 1 ? "line-through" : null
                     }`}
                   >
                     {todo.name}
                   </td>
                   <td
-                    className={`p-2 md:py-1 border-r max-w-96 xxl:max-w-72 lg:max-w-64 md:max-w-52 sn:max-w-32 md:text-sm xs:text-[0.7rem] text-pretty ${
+                    className={`p-2 md:py-1 border-r max-w-96 xxl:max-w-72 lg:max-w-64 md:max-w-52 sn:max-w-32 md:text-sm xs:text-[0.7rem] w-full break-words ${
                       todo.done.data[0] === 1 ? "line-through" : null
                     }`}
                   >
                     {todo.description}
                   </td>
-                  <td className="px-0.5 py-2 flex items-center justify-center">
+                  <td className="p-2 md:p-1 flex items-center justify-center">
                     <button
                       onClick={() => deleteTodo(todo.id)}
                       className="text-red-500 transition-transform active:translate-y-0.5"
                     >
-                      <MdDeleteForever className="w-5 h-5" />
+                      <MdDeleteForever className="w-5 h-5 md:w-3.5" />
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <button onClick={handleCreate} className="w-fit m-2">
+            <CiSquarePlus className="w-5 h-5 text-slate-500" />
+          </button>
         </div>
       ) : (
         <button
@@ -134,6 +140,9 @@ export default function Todos({ todos, userId, fetchUserInfo, popUp, setPopUp }:
           fetchUserInfo={fetchUserInfo}
         />
       )}
+			{menu && (
+				<DropdownMenu setMenu={setMenu} />
+			)}
     </section>
   );
 }

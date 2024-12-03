@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function Dashboard() {
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-10">
+    <main className="flex flex-col items-center justify-center min-h-screen p-10 md:p-2">
       <Interface />
     </main>
   );
