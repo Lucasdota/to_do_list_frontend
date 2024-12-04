@@ -3,5 +3,5 @@
   "/dashboard/page": "app/dashboard/page.js",
   "/create-account/page": "app/create-account/page.js",
   "/api/verifyToken/route": "app/api/verifyToken/route.js",
-  "/api/deleteAcc/route": "app/api/deleteAcc/route.js"
+  "/api/getUser/route": "app/api/getUser/route.js"
 }

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function middleware(req) {
   let token = req.cookies.token;
 
-  // Check cookies first, then fall back to headers
+  // check cookies first, then fall back to headers
   if (!token) {
     console.log("Token not found in cookies. Trying header.");
     const cookieHeader = req.headers.get("cookie");
@@ -23,7 +23,7 @@ export async function middleware(req) {
   }
 
   try {
-    // Verify the token on the server-side for security
+    // verify the token on the server-side for security
     const url = new URL("/api/verifyToken", req.url);
     const response = await fetch(url, {
       method: "POST",

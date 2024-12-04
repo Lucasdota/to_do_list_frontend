@@ -15,6 +15,7 @@ export default function Interface() {
   const [loading, setLoading] = useState<boolean>(true);
 	const [popUp, setPopUp] = useState<boolean>(false);
 	const [menu, setMenu] = useState<boolean>(false);
+	const [redirectPopUp, setRedirectPopUp] = useState<boolean>(false);
 
   const fetchUserInfo = async () => {
     try {
@@ -61,7 +62,7 @@ export default function Interface() {
             <button
               onClick={() => setMenu(true)}
               className={`shadow bg-white rounded p-0.5
-								${menu || popUp ? "pointer-events-none" : null}`}
+								${menu || popUp || redirectPopUp ? "pointer-events-none" : null}`}
             >
               <PiGearSix className="text-gray-800 transform transition-transform active:rotate-45" />
             </button>
@@ -74,6 +75,8 @@ export default function Interface() {
             setPopUp={setPopUp}
             menu={menu}
             setMenu={setMenu}
+            redirectPopUp={redirectPopUp}
+            setRedirectPopUp={setRedirectPopUp}
           />
         </>
       )}

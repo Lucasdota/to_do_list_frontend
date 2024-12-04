@@ -3,7 +3,8 @@ import TodosType from "./types/todos";
 import { CiSquarePlus } from "react-icons/ci";
 import PopUp from './PopUp';
 import { MdDeleteForever } from "react-icons/md";
-import DropdownMenu from './DropdownMenu';
+import IsSureMenu from './IsSureMenu';
+import RedirectPopUp from './RedirectPopUp';
 
 type Props = {
   todos: TodosType[] | null;
@@ -13,11 +14,22 @@ type Props = {
   setPopUp: Dispatch<SetStateAction<boolean>>;
   menu: boolean;
   setMenu: Dispatch<SetStateAction<boolean>>;
+  redirectPopUp: boolean;
+	setRedirectPopUp: Dispatch<SetStateAction<boolean>>
 };
 
-export default function Todos({ todos, userId, fetchUserInfo, popUp, setPopUp, menu, setMenu }: Props) {
-  
-	const handleCreate = () => {
+export default function Todos({
+  todos,
+  userId,
+  fetchUserInfo,
+  popUp,
+  setPopUp,
+  menu,
+  setMenu,
+  redirectPopUp,
+  setRedirectPopUp,
+}: Props) {
+  const handleCreate = () => {
     setPopUp(true);
   };
 
@@ -133,16 +145,16 @@ export default function Todos({ todos, userId, fetchUserInfo, popUp, setPopUp, m
           <CiSquarePlus className="w-6 h-6 mx-auto" />
         </button>
       )}
-      {popUp && (
-        <PopUp
+      {popUp && <PopUp
           setPopUp={setPopUp}
           userId={userId}
           fetchUserInfo={fetchUserInfo}
         />
-      )}
-			{menu && (
-				<DropdownMenu setMenu={setMenu} />
-			)}
+      }
+      {menu && <IsSureMenu setMenu={setMenu} setRedirectPopUp={setRedirectPopUp} />
+      }
+			{redirectPopUp && <RedirectPopUp />
+			}
     </section>
   );
 }
