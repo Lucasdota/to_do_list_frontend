@@ -14,7 +14,7 @@ export default function IsSureMenu({ setMenu, setRedirectPopUp }: Props) {
 
   const Logout = async () => {
     try {
-      const response = await fetch("/api/logout", {
+      const response = await fetch("http://localhost:8080/auth/logout", {
         method: "POST",
         credentials: "include", // include cookies in the request
       });

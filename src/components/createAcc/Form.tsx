@@ -81,8 +81,9 @@ const Form = () => {
 		if (validated) {
 			try {
 				setIsFetching(true);
-				const response = await fetch("/api/createAcc", {
+				const response = await fetch("http://localhost:8080/auth/register", {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -91,9 +92,9 @@ const Form = () => {
             password: formDataObj.userPass,
           }),
         });
-				const data = await response.json();
+				const data = await response.text();
 				if (!response.ok) {	
-					setServerError(data.error);
+					setServerError(data);
         } else {
           console.log("Account created successfully:", data);
           router.push("/dashboard");
@@ -101,6 +102,7 @@ const Form = () => {
 			} catch (err) {
 				if (err instanceof Error) {
           setServerError(err.message);
+					console.log(err.message);		
 				} else {
 					setServerError("Unknown server error while creating account.")
 				}		

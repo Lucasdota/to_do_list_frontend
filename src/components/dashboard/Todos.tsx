@@ -8,19 +8,19 @@ import RedirectPopUp from './RedirectPopUp';
 
 type Props = {
   todos: TodosType[] | null;
-  userId: number;
+  userId: Number | null;
   fetchUserInfo: () => void;
   popUp: boolean;
   setPopUp: Dispatch<SetStateAction<boolean>>;
   menu: boolean;
   setMenu: Dispatch<SetStateAction<boolean>>;
   redirectPopUp: boolean;
-	setRedirectPopUp: Dispatch<SetStateAction<boolean>>
+  setRedirectPopUp: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function Todos({
   todos,
-  userId,
+	userId,
   fetchUserInfo,
   popUp,
   setPopUp,
@@ -145,16 +145,17 @@ export default function Todos({
           <CiSquarePlus className="w-6 h-6 mx-auto" />
         </button>
       )}
-      {popUp && <PopUp
-          setPopUp={setPopUp}
+      {popUp && (
+        <PopUp
           userId={userId}
+          setPopUp={setPopUp}
           fetchUserInfo={fetchUserInfo}
         />
-      }
-      {menu && <IsSureMenu setMenu={setMenu} setRedirectPopUp={setRedirectPopUp} />
-      }
-			{redirectPopUp && <RedirectPopUp />
-			}
+      )}
+      {menu && (
+        <IsSureMenu setMenu={setMenu} setRedirectPopUp={setRedirectPopUp} />
+      )}
+      {redirectPopUp && <RedirectPopUp />}
     </section>
   );
 }

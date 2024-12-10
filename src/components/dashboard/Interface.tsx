@@ -1,15 +1,14 @@
 "use client"
 import React from 'react'
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Spinner from "@/components/shared/Spinner";
 import Todos from './Todos';
 import TodosType from "./types/todos";
-import UserType from './types/user';
 import { PiGearSix } from "react-icons/pi";
 
 export default function Interface() {
-  const [user, setUser] = useState<UserType | null>(null);
+	const [userId, setUserId] = useState<Number | null>(null);
+  const [email, setEmail] = useState<string>("");
   const [todos, setTodos] = useState<TodosType[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -19,17 +18,20 @@ export default function Interface() {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await fetch("/api/getUser", {
+      const response = await fetch("http://localhost:8080/user", {
         method: "GET",
         credentials: "include",
       });
       if (!response.ok) {
         throw new Error("Failed to fetch user information");
       }
-      const data = await response.json();
-      const { user, todos } = data;
-      setUser(user);
-      setTodos(todos);
+      const userDetails = await response.json();
+			console.log("userDetails.id: " + userDetails.id);
+			console.log("userDetails.email: " + userDetails.email);
+			console.log("userDetails.todos: " + userDetails.todos);
+			
+      setEmail(userDetails.email);
+      setTodos(userDetails.todos);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -50,14 +52,14 @@ export default function Interface() {
     <>
       {loading && <Spinner width={8} height={8} />}
       {error && <p className="text-red-500 font-bold">{error}</p>}
-      {user && (
+      {email && (
         <>
           <h1 className="text-xl font-bold md:text-base xs:text-sm">
             Welcome to your dashboard
           </h1>
           <div className="flex justify-between items-center gap-4">
             <h2 className="italic md:text-sm xs:text-[0.75rem]">
-              {user?.email}
+              {email}
             </h2>
             <button
               onClick={() => setMenu(true)}
@@ -69,7 +71,7 @@ export default function Interface() {
           </div>
           <Todos
             todos={todos}
-            userId={user.id}
+						userId={userId}
             fetchUserInfo={fetchUserInfo}
             popUp={popUp}
             setPopUp={setPopUp}

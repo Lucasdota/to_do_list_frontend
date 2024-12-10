@@ -3,20 +3,20 @@ import { LiaWindowCloseSolid } from "react-icons/lia";
 import Spinner from '../shared/Spinner';
 
 type Props = {
+  userId: Number | null;
   setPopUp: Dispatch<SetStateAction<boolean>>;
-  userId: number;
   fetchUserInfo: () => void;
 };
 
-export default function PopUp({ setPopUp, userId, fetchUserInfo }: Props) {
-	const formSection = useRef<HTMLFormElement>(null);
-	const [name, setName] = useState<string>("");
-	const [description, setDescription] = useState<string>("");
-	const [nameError, setNameError] = useState<string>("");
-	const [descriptionError, setDescriptionError] = useState<string>("");
-	const [loading, setLoading] = useState<boolean>(false);
+export default function PopUp({ userId, setPopUp, fetchUserInfo }: Props) {
+  const formSection = useRef<HTMLFormElement>(null);
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [nameError, setNameError] = useState<string>("");
+  const [descriptionError, setDescriptionError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-	const validateInputs = () => {
+  const validateInputs = () => {
     let isValid = true;
     if (name.length === 0) {
       setNameError("Name is required.");
@@ -42,43 +42,50 @@ export default function PopUp({ setPopUp, userId, fetchUserInfo }: Props) {
   const createTodo = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateInputs()) {
-      return;
-    }
+    if (!validateInputs()) return;
 
-		setLoading(true);
+    setLoading(true);
     try {
-      const response = await fetch("/api/createTodo", {
+      const response = await fetch("http://localhost:8080/user/create-to-do", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ userId, name, description }),
+        body: JSON.stringify({
+          userId: userId,
+          name: name,
+          description: description,
+        }),
       });
       if (!response.ok) {
-				setLoading(false);
-        throw new Error("Failed to create todo.");			
+        setLoading(false);
+				console.log("Failed to create todo.");	
+        throw new Error("Failed to create todo.");
       }
     } catch (err) {
       console.error("Error:", err);
+      setLoading(false);
+    } finally {
 			setLoading(false);
-    } finally {	
-			fetchUserInfo();		
-		}
+      fetchUserInfo();
+    }
   };
 
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (formSection.current && !formSection.current.contains(event.target as Node)) {
-				setPopUp(false);
-			}
-		}
-		document.addEventListener("mousedown", handleClickOutside);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        formSection.current &&
+        !formSection.current.contains(event.target as Node)
+      ) {
+        setPopUp(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
     // cleanup the event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-	}, [setPopUp])
+  }, [setPopUp]);
 
   return (
     <section
@@ -151,7 +158,7 @@ export default function PopUp({ setPopUp, userId, fetchUserInfo }: Props) {
             </span>
           )}
         </div>
-				{/* add btn */}
+        {/* add btn */}
         <button className="text-[.85rem] font-bold text-neutral-500 py-1 px-2 bg-white rounded border">
           {loading ? <Spinner width={1} height={1} /> : "Add"}
         </button>

@@ -1,14 +1,14 @@
+// middleware.ts
 import { NextResponse } from "next/server";
 
 export async function middleware(req) {
-  let token = req.cookies.token;
-
-  // check cookies first, then fall back to headers
+  const { pathname } = req.nextUrl;
+  let token = req.cookies.JWT;
   if (!token) {
     console.log("Token not found in cookies. Trying header.");
     const cookieHeader = req.headers.get("cookie");
     if (cookieHeader) {
-      const tokenRegex = /token=([^;]+)/;
+      const tokenRegex = /JWT=([^;]+)/;
       const match = cookieHeader.match(tokenRegex);
       if (match) {
         token = match[1];
@@ -17,38 +17,24 @@ export async function middleware(req) {
     }
   }
 
-  if (!token) {
-    console.log("Token not found.");
-    return NextResponse.redirect(new URL("/", req.url));
+  if (pathname === "/" || pathname === "/create-account") {
+    if (token) {
+      console.log("Token found. Redirecting to dashboard.");
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
   }
 
-  try {
-    // verify the token on the server-side for security
-    const url = new URL("/api/verifyToken", req.url);
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    });
-
-    if (!response.ok) {
-      console.error("Error verifying token on server:", await response.text());
+  if (pathname === "/dashboard") {
+    if (!token) {
+      console.log("No token found. Redirecting to login.");
       return NextResponse.redirect(new URL("/", req.url));
     }
-
-    const user = await response.json();
-    req.user = user; // Attach user info to the request (if valid)
-  } catch (err) {
-    console.error("Error verifying token:", err);
-    return NextResponse.redirect(new URL("/", req.url));
   }
 
   return NextResponse.next();
 }
 
-// Specify the paths to protect
+// paths to protect
 export const config = {
-  matcher: ["/dashboard"],
+  matcher: ["/", "/create-account", "/dashboard"],
 };
