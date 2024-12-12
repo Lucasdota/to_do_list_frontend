@@ -40,14 +40,13 @@ export default function PopUp({ userId, setPopUp, fetchUserInfo }: Props) {
   };
 
   const createTodo = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+    e.preventDefault();	
     if (!validateInputs()) return;
-
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/user/create-to-do", {
+      const response = await fetch("http://localhost:8080/todo", {
         method: "POST",
+				credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },
@@ -59,11 +58,9 @@ export default function PopUp({ userId, setPopUp, fetchUserInfo }: Props) {
       });
       if (!response.ok) {
         setLoading(false);
-				console.log("Failed to create todo.");	
         throw new Error("Failed to create todo.");
       }
     } catch (err) {
-      console.error("Error:", err);
       setLoading(false);
     } finally {
 			setLoading(false);

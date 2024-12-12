@@ -3,7 +3,7 @@ import TodosType from "./types/todos";
 import { CiSquarePlus } from "react-icons/ci";
 import PopUp from './PopUp';
 import { MdDeleteForever } from "react-icons/md";
-import IsSureMenu from './IsSureMenu';
+import ConfigMenu from "./ConfigMenu";
 import RedirectPopUp from './RedirectPopUp';
 
 type Props = {
@@ -16,11 +16,12 @@ type Props = {
   setMenu: Dispatch<SetStateAction<boolean>>;
   redirectPopUp: boolean;
   setRedirectPopUp: Dispatch<SetStateAction<boolean>>;
+  logout: () => void;
 };
 
 export default function Todos({
   todos,
-	userId,
+  userId,
   fetchUserInfo,
   popUp,
   setPopUp,
@@ -28,19 +29,22 @@ export default function Todos({
   setMenu,
   redirectPopUp,
   setRedirectPopUp,
+  logout
 }: Props) {
+	
   const handleCreate = () => {
     setPopUp(true);
   };
 
-  const handleCheckboxChange = async (status: number, todoId: Number) => {
+  const handleCheckboxChange = async (todoId: Number) => {	
     try {
-      const response = await fetch("/api/updateStatus", {
+      const response = await fetch("http://localhost:8080/todo", {
         method: "PUT",
+				credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status, todoId }),
+        body: JSON.stringify({ todoId }),
       });
       if (!response.ok) {
         const errorMessage = await response.text();
@@ -54,8 +58,9 @@ export default function Todos({
 
   const deleteTodo = async (todoId: Number) => {
     try {
-      const response = await fetch("/api/deleteTodo", {
+      const response = await fetch("http://localhost:8080/todo", {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -99,23 +104,23 @@ export default function Todos({
                   <td className="p-2 md:p-1 md:mb-1 border-r flex items-center justify-center">
                     <input
                       type="checkbox"
-                      checked={todo.done.data[0] === 1}
+                      checked={todo.done}
                       onChange={() =>
-                        handleCheckboxChange(todo.done.data[0], todo.id)
+                        handleCheckboxChange(todo.id)
                       }
-                      className="cursor-pointer md:w-2.5"
+                      className="cursor-pointer md:w-2.5 accent-green-400"
                     />
                   </td>
                   <td
                     className={`p-2 md:py-1 border-r max-w-56 xxl:max-w-44 lg:max-w-32 md:max-w-24 md:text-sm xs:text-[0.7rem] break-words ${
-                      todo.done.data[0] === 1 ? "line-through" : null
+                      todo.done ? "line-through decoration-slate-400" : null
                     }`}
                   >
                     {todo.name}
                   </td>
                   <td
                     className={`p-2 md:py-1 border-r max-w-96 xxl:max-w-72 lg:max-w-64 md:max-w-52 sn:max-w-32 md:text-sm xs:text-[0.7rem] w-full break-words ${
-                      todo.done.data[0] === 1 ? "line-through" : null
+                      todo.done ? "line-through decoration-slate-400" : null
                     }`}
                   >
                     {todo.description}
@@ -123,7 +128,7 @@ export default function Todos({
                   <td className="p-2 md:p-1 flex items-center justify-center">
                     <button
                       onClick={() => deleteTodo(todo.id)}
-                      className="text-red-500 transition-transform active:translate-y-0.5"
+                      className="text-red-400 transition-transform active:translate-y-0.5"
                     >
                       <MdDeleteForever className="w-5 h-5 md:w-3.5" />
                     </button>
@@ -153,7 +158,11 @@ export default function Todos({
         />
       )}
       {menu && (
-        <IsSureMenu setMenu={setMenu} setRedirectPopUp={setRedirectPopUp} />
+        <ConfigMenu
+          setMenu={setMenu}				
+          setRedirectPopUp={setRedirectPopUp}
+          logout={logout}
+        />
       )}
       {redirectPopUp && <RedirectPopUp />}
     </section>

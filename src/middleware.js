@@ -36,5 +36,5 @@ export async function middleware(req) {
 
 // paths to protect
 export const config = {
-  matcher: ["/", "/create-account", "/dashboard"],
+  matcher: ["/dashboard"],
 };
