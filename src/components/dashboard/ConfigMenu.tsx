@@ -13,7 +13,7 @@ export default function ConfigMenu({ setMenu, setRedirectPopUp, logout }: Props)
   const configSection = useRef<HTMLUListElement>(null);
   const router = useRouter();
 
-  const Delete = async () => {
+  const deleteAcc = async () => {
     try {
       const response = await fetch("http://localhost:8080/user", {
         method: "DELETE",
@@ -22,14 +22,17 @@ export default function ConfigMenu({ setMenu, setRedirectPopUp, logout }: Props)
           "Content-Type": "application/json",
         },
       });
+			const data = await response.text();
       if (!response.ok) {
         const errorMessage = `Error: ${response.status} - ${response.statusText}`;
+				console.error(errorMessage);
       } else {
         setRedirectPopUp(true);
         setMenu(false);
         setTimeout(() => {
           router.push("/");
         }, 3000);
+				console.log(data);
       }
     } catch (err) {
       console.error("Fetch error:", err);
@@ -70,7 +73,7 @@ export default function ConfigMenu({ setMenu, setRedirectPopUp, logout }: Props)
           </p>
           <div className="flex gap-2 items-center justify-center">
             <button
-              onClick={Delete}
+              onClick={deleteAcc}
               className="text-[0.65rem] py-1 px-2 shadow bg-slate-50 shadow-black/20 rounded transition-transform duration-150 ease-in-out transform active:scale-95 text-red-500"
             >
               Yes

@@ -96,7 +96,7 @@ const Form = () => {
 				if (!response.ok) {	
 					setServerError(data);
         } else {
-          console.log("Account created successfully:", data);
+          console.log(data);
           router.push("/dashboard");
         }
 			} catch (err) {
